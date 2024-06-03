@@ -14,8 +14,9 @@ public class Sketch extends PApplet {
   PImage controlsButton;
   PImage exitButton;
 
-  // Controls screen
+  // Controls screen and back button
   PImage controlScreen;
+  PImage ctrlBack;
 
   // Flashlight
 	PImage flashlight;
@@ -81,6 +82,10 @@ public class Sketch extends PApplet {
     // Load the control screen and resize
     controlScreen = loadImage("Game Controls.png");
     controlScreen.resize(controlScreen.width * width/918, controlScreen.height * height/918);
+
+    // Load the back button on the control screen and resize
+    ctrlBack = loadImage("Back Button.png");
+    ctrlBack.resize(ctrlBack.width * width/918, ctrlBack.height * height/918);
     
     // Load Alex's movement animations
     alexBack1 = loadImage("Alex Back 1.png");
@@ -137,20 +142,55 @@ public class Sketch extends PApplet {
   
   // Draws the start screen when intDraw = -1
   public void drawStartScreen() {
+
+    // Gives the start button a red tint when the start button hovers over it
+    if (mouseX > width * 100/918 && mouseX < width * 100/918 + playButton.width && mouseY > height * 325/918 && mouseY < height * 325/918 + playButton.height) {
+      tint(255, 0, 0);
+      image(playButton, width * 100/918, height * 325/918);
+      noTint();
+    }
     
-    // Start screen background
-    image(startScreen, 0, 0);
+    // Gives the controls button a red tint when the mouse hovers over it
+    else if (mouseX > width * 100/918 && mouseX < width * 100/918 + controlsButton.width && mouseY > height * 440/918 && mouseY < height * 440/918 + controlsButton.height) {
+      tint(255, 0, 0);
+      image(controlsButton, width * 100/918, height * 440/918);
+      noTint();
+    }
+    // Gives the exit button a red tint when the mouse hovers over it
+    else if (mouseX > width * 100/918 && mouseX < width * 100/918 + exitButton.width && mouseY > height * 555/918 && mouseY < height * 555/918 + exitButton.height) {
+      tint(255, 0, 0);
+      image(exitButton, width * 100/918, height * 555/918);
+      noTint();
+    }
+    else {
+      // Start screen background
+      image(startScreen, 0, 0);
 
-    // Buttons on the start screen
-    image(playButton, width * 100/918, height * 325/918);
-    image(controlsButton, width * 100/918, height * 440/918);
-    image(exitButton, width * 100/918, height * 555/918);
-
+      // Buttons on the start screen
+      image(playButton, width * 100/918, height * 325/918);
+      image(controlsButton, width * 100/918, height * 440/918);
+      image(exitButton, width * 100/918, height * 555/918);
+    }
   }
   
-  // Draws the controls when intDraw = 0
+  // Draws the control screen when intDraw = 0
   public void drawControlScreen() {
+    
+    // Gives the back button a red tint when the mouse hovers over it
+    if (mouseX > width * 752/918 && mouseX < width * 752/918 + ctrlBack.width && mouseY > height * 808/918 && mouseY < height * 808/918 + ctrlBack.height) {
+      tint(255, 0, 0);
+      image(ctrlBack, width * 752/918, height * 808/918);
+      noTint();
+    }
+    
+    else {
+    // Controls
     image(controlScreen, 0, 0);
+
+    // Back button
+    image(ctrlBack, width * 752/918, height * 808/918);
+    }
+    
   }
 
   // Draws the first room when intDraw = 1
@@ -246,7 +286,8 @@ public class Sketch extends PApplet {
     // Checks if the player presses the back button on the controls screen
     else if (intDraw == 0) {
       
-      if (mouseX > width * 752/918 && mouseX < width * 896/918 && mouseY > height * 808/918 && mouseY < height * 901/918) {
+      // Goes back to the start screen if the back button is pressed
+      if (mouseX > width * 752/918 && mouseX < width * 752/918 + ctrlBack.width && mouseY > height * 808/918 && mouseY < height * 808/918 + ctrlBack.height) {
         intDraw = -1;
       }
     }
