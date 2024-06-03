@@ -3,6 +3,14 @@ import processing.core.PImage;
 
 public class Sketch extends PApplet {
 	
+  // Determines what is drawn on the screen
+  int intArea = -1;
+
+  // Start screen and control screen images
+  PImage startScreen;
+  PImage controlScreen;
+
+  // Flashlight
 	PImage flashlight;
   
   // Alex Idle Tileset
@@ -44,6 +52,10 @@ public class Sketch extends PApplet {
    * values here i.e background, stroke, fill etc.
    */
   public void setup() {
+    
+    // Load the start screen and controls
+    startScreen = loadImage("Start Screen No Buttons.png");
+    controlScreen = loadImage("Game Controls.png")
     
     // Load Alex's movement animations
     alexBack1 = loadImage("Alex Back 1.png");
@@ -112,5 +124,30 @@ public class Sketch extends PApplet {
     else if (key == 'd') {
       dPressed = false;
     }
+  }
+
+  // Draws the start screen when intArea = -1
+  public void drawStartScreen() {
+
+  }
+  
+  // Draws the controls when intArea = 0
+  public void drawControlScreen() {
+
+  }
+
+  // Draws the first room when intArea = 1
+  public void drawRoom1() {
+
+  }
+
+  // Draws the second room when intArea = 2
+  public void drawRoom2() {
+
+  }
+
+  // Draws the third room when intArea = 3
+  public void drawRoom3() {
+
   }
 }
