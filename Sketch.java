@@ -4,19 +4,19 @@ import processing.core.PImage;
 public class Sketch extends PApplet {
 	
   // Determines which area is drawn on the screen
-  int intDraw = -1;
+  int intDraw = 0;
 
   // Start screen
   PImage startScreen;
 
   // Buttons on start screen
-  PImage playButton;
-  PImage controlsButton;
-  PImage exitButton;
+  PImage playButton, controlsButton, exitButton;
 
   // Controls screen and back button
-  PImage controlScreen;
-  PImage ctrlBack;
+  PImage controlScreen, ctrlBack;
+
+  // Story summary
+  PImage storySummary;
 
   // Flashlight
 	PImage flashlight;
@@ -25,33 +25,32 @@ public class Sketch extends PApplet {
   int intSizeProportion = 275;
 
   // Alex's Idle Images
-  PImage alexIdleBack;
-  PImage alexIdleForward;
-  PImage alexIdleLeft;
-  PImage alexIdleRight;
+  PImage alexIdleBack, alexIdleForward, alexIdleLeft, alexIdleRight;
 
   // Alex's Run Images
-  PImage alexBack1;
-  PImage alexBack2;
-  PImage alexForward1;
-  PImage alexForward2;
-  PImage alexLeft1;
-  PImage alexLeft2;
-  PImage alexRight1;
-  PImage alexRight2;
+  PImage alexBack1, alexBack2, alexForward1, alexForward2, alexLeft1, alexLeft2, alexRight1, alexRight2;
 
   // Alex's coordinates
-  int intAlexX;
-  int intAlexY;
+  int intAlexX,intAlexY;
 
   // Alex's Speed
   int intAlexSpeed = 6;
+
+  // Sprite and counter for Alex's movement animation
+  int intSprite = 1;
+  int intCounter = 0;
+
+  // Determines Alex's direction for his idle
+  String strDir = "Down";
 
   // Boolean values for Alex's movement
   boolean wPressed = false;
   boolean sPressed = false;
   boolean aPressed = false;
   boolean dPressed = false;
+
+  // Cabin background for all three rooms
+  PImage cabinBack;
 
   // Set the size of the window
   public void settings() {
@@ -64,7 +63,6 @@ public class Sketch extends PApplet {
 
   // Load and resize all images
   public void setup() {
-    
     // Load the start screen and resize
     startScreen = loadImage("Start Screen.png");
     startScreen.resize(startScreen.width * width/918, startScreen.height * height/918);
@@ -87,6 +85,16 @@ public class Sketch extends PApplet {
     ctrlBack = loadImage("Back Button.png");
     ctrlBack.resize(ctrlBack.width * width/918, ctrlBack.height * height/918);
     
+    // Load and resize the story summary
+    storySummary = loadImage("Story Summary.png");
+    storySummary.resize(storySummary.width * width/800, storySummary.height * height/800);
+
+    // Load Alex's idle animations
+    alexIdleBack = loadImage("Alex Idle Back.png");
+    alexIdleForward = loadImage("Alex Idle Forward.png");
+    alexIdleLeft = loadImage("Alex Idle Left.png");
+    alexIdleRight = loadImage("Alex Idle Right.png");
+
     // Load Alex's movement animations
     alexBack1 = loadImage("Alex Back 1.png");
     alexBack1.resize(alexBack1.width * width/intSizeProportion, alexBack1.height * height/intSizeProportion);
@@ -111,36 +119,44 @@ public class Sketch extends PApplet {
     // Load the flashlight
     flashlight = loadImage("Flashlight.png");
 
+    cabinBack = loadImage("Cabin Room Template.png");
+    cabinBack.resize(cabinBack.width * width/200, cabinBack.height * height/200);
+
   }
 
   // Everything drawn to the screen
   public void draw() {
     // Draw start screen
-    if (intDraw == -1) {
+    if (intDraw == 0) {
       drawStartScreen();
+      drawAlex();
+    }
+    // Draw the story summary
+    else if (intDraw == 1) {
+      drawStorySum();
     }
     // Draw the controls screen
-    else if (intDraw == 0) {
+    else if (intDraw == 2) {
       drawControlScreen();
     }
     // Draw room 1
-    else if (intDraw == 1) {
+    else if (intDraw == 3) {
       drawRoom1();
       drawAlex();
     }
     // Draw room 2
-    else if (intDraw == 2) {
+    else if (intDraw == 4) {
       drawRoom2();
       drawAlex();
     }
     // Draw room 3
-    else if (intDraw == 3) {
+    else if (intDraw == 5) {
       drawRoom3();
       drawAlex();
     }
   }
   
-  // Draws the start screen when intDraw = -1
+  // Draws the start screen when intDraw = 0
   public void drawStartScreen() {
 
     // Gives the start button a red tint when the start button hovers over it
@@ -173,7 +189,12 @@ public class Sketch extends PApplet {
     }
   }
   
-  // Draws the control screen when intDraw = 0
+  // Displays a summary of the story on the screen when intDraw = 1
+  public void drawStorySum() {
+    image(storySummary, 0, 0);
+  }
+
+  // Draws the control screen when intDraw = 2
   public void drawControlScreen() {
     
     // Gives the back button a red tint when the mouse hovers over it
@@ -193,19 +214,50 @@ public class Sketch extends PApplet {
     
   }
 
-  // Draws the first room when intDraw = 1
+  // Draws the first room when intDraw = 3
   public void drawRoom1() {
-
+    image(cabinBack, 0, 0);
+    if (intAlexX > width) {
+      intDraw = 4;
+      intAlexX = 1;
+    }
   }
 
-  // Draws the second room when intDraw = 2
+  // Draws the second room when intDraw = 4
   public void drawRoom2() {
-
+    image(cabinBack, 0, 0);
+    
+    // Moves to the first room when Alex moves off to the left of the screen
+    if (intAlexX < 0) {
+      intDraw = 3;
+      intAlexX = width;
+    }
+    // Moves to the third room when Alex moves off the right of the screen
+    else if (intAlexX > width) {
+      intDraw = 5;
+      intAlexX = 1;
+    }
   }
 
-  // Draws the third room when intDraw = 3
+  // Draws the third room when intDraw = 5
   public void drawRoom3() {
+    image(cabinBack, 0, 0);
+    fill(255, 0, 0);
+    ellipse(200, 200, 200, 200);
 
+    // Moves to the second room when Alex moves off the left of the screen
+    if (intAlexX < 0) {
+      intDraw = 4;
+      intAlexX = width;
+    }
+    // Moves to the ending cutscene
+    else if (intAlexX > width) {
+      // Some end screen thing here
+    }
+  }
+
+  public void drawEnd() {
+    // Some random thingy here I suppose
   }
 
   // Draws Alex to the screen
@@ -213,20 +265,97 @@ public class Sketch extends PApplet {
     if (keyPressed) {
       
       if (wPressed) {
+        
+        // Makes Alex move forward
         intAlexY -= intAlexSpeed;
-        image(alexForward1, intAlexX, intAlexY);
+        
+        // Draws the first sprite
+        if (intSprite == 1) {
+          image(alexForward1, intAlexX, intAlexY);
+        }
+        // Draws the second sprite
+        else if (intSprite == 2) {
+          image(alexForward2, intAlexX, intAlexY);
+        }
       }
+
       else if (sPressed) {
+        
+        // Makes Alex move backward
         intAlexY += intAlexSpeed;
-        image(alexBack1, intAlexX, intAlexY);
+        
+        // Draws the first sprite
+        if (intSprite == 1) {
+          image(alexBack1, intAlexX, intAlexY);
+        }
+        // Draws the second sprite
+        else if (intSprite == 2) {
+          image(alexBack2, intAlexX, intAlexY);
+        }
       }
       else if (aPressed) {
+        
+        // Makes Alex move to the left
         intAlexX -= intAlexSpeed;
-        image(alexLeft1, intAlexX, intAlexY);
+        
+        // Draws the first sprite
+        if (intSprite == 1) {
+          image(alexLeft1, intAlexX, intAlexY);
+        }
+        // Draws the second sprite
+        else if (intSprite == 2) {
+          image(alexLeft2, intAlexX, intAlexY);
+        }
       }
       else if (dPressed) {
+
+        // Makes Alex move to the right
         intAlexX += intAlexSpeed;
-        image(alexRight1, intAlexX, intAlexY);
+
+        // Draws the first sprite
+        if (intSprite == 1) {
+          image(alexRight1, intAlexX, intAlexY);
+        }
+
+        // Draws the second sprite
+        else if (intSprite == 2) {
+          image(alexRight2, intAlexX, intAlexY);
+        }
+      }
+      
+      // Increments the sprite counter by 1
+      intCounter++;
+
+      // Changes the sprite when the counter reaches a certain number
+      if (intCounter == 6) {
+
+        // Changes the sprite to the second sprite
+        if (intSprite == 1) {
+          intSprite = 2;
+        }
+        // Changes the sprite to the first sprite
+        else if (intSprite == 2) {
+          intSprite = 1;
+        }
+        // Reset the sprite counter to zero
+        intCounter = 0;
+      }
+    }
+  
+    // Draws Alex's idle
+    else {
+      if (strDir.equals("Down")) {
+        image(alexIdleBack, intAlexX, intAlexY);
+      }
+      else if (strDir.equals("Up")) {
+        image(alexIdleForward, intAlexX, intAlexY);
+      }
+      else if (strDir.equals("Left")) {
+        ellipse(20, 20, 20, 20);
+        image(alexIdleLeft, intAlexX, intAlexY);
+      }
+      else if (strDir.equals("Right")) {
+        image(alexIdleRight, intAlexX, intAlexY);
       }
     }
   }
@@ -250,15 +379,19 @@ public class Sketch extends PApplet {
   public void keyReleased() {
     if (key == 'w') {
       wPressed = false;
+      strDir = "Up";
     }
     else if (key == 's') {
       sPressed = false;
+      strDir = "Down";
     }
     else if (key == 'a') {
       aPressed = false;
+      strDir = "Left";
     }
     else if (key == 'd') {
       dPressed = false;
+      strDir = "Right";
     }
   }
 
@@ -266,7 +399,7 @@ public class Sketch extends PApplet {
   public void mousePressed() {
     
     // Checks mouse interactivity on the start screen
-    if (intDraw == -1) {
+    if (intDraw == 0) {
       
       // Starts the game when the start button is pressed
       if (mouseX > width * 100/918 && mouseX < width * 100/918 + playButton.width && mouseY > height * 325/918 && mouseY < height * 325/918 + playButton.height) {
@@ -275,7 +408,7 @@ public class Sketch extends PApplet {
       
       // Shows the players the control screen when the controls button is pressed
       else if (mouseX > width * 100/918 && mouseX < width * 100/918 + controlsButton.width && mouseY > height * 440/918 && mouseY < height * 440/918 + controlsButton.height) {
-        intDraw = 0;
+        intDraw = 2;
       }
       // Exits the program when the exit button is pressed
       else if (mouseX > width * 100/918 && mouseX < width * 100/918 + exitButton.width && mouseY > height * 555/918 && mouseY < height * 555/918 + exitButton.height) {
@@ -283,13 +416,30 @@ public class Sketch extends PApplet {
       }
     }
     
+    // Checks if the player clicks to move past the story summary
+    else if (intDraw == 1) {
+      intDraw = 3;
+    }
+
     // Checks if the player presses the back button on the controls screen
-    else if (intDraw == 0) {
+    else if (intDraw == 2) {
       
       // Goes back to the start screen if the back button is pressed
       if (mouseX > width * 752/918 && mouseX < width * 752/918 + ctrlBack.width && mouseY > height * 808/918 && mouseY < height * 808/918 + ctrlBack.height) {
-        intDraw = -1;
+        intDraw = 0;
       }
+    }
+    // Checks the players mouse interactions in the first room
+    else if (intDraw == 3) {
+      
+    }
+    // Checks the players mouse interactions in the second room
+    else if (intDraw == 4) {
+
+    }
+    // Checks the players mouse interactions int he third room
+    else if (intDraw == 5) {
+
     }
   }
 }
