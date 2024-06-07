@@ -20,9 +20,6 @@ public class Sketch extends PApplet {
 
   // Flashlight
 	PImage flashlight;
-  
-  // Alex's size readjustment
-  int intSizeProportion = 275;
 
   // Alex's Idle Images
   PImage alexIdleBack, alexIdleForward, alexIdleLeft, alexIdleRight;
@@ -54,6 +51,18 @@ public class Sketch extends PApplet {
 
   // Cabin background for all three rooms
   PImage cabinBack;
+
+  // Array to store the room 1 clues
+  PImage[] roomOneClues = new PImage[4];
+
+  // Array to store the room 2 letters
+  PImage[] roomTwoLetters = new PImage[3];
+
+  // Array to store the room 3 letters
+  PImage[] roomThreeLetters = new PImage[6];
+
+  // Array to store the number keys for the passwords in room 1 and 2
+  PImage[] numKeys = new PImage[10];
 
   // Set the size of the window
   public void settings() {
@@ -113,6 +122,26 @@ public class Sketch extends PApplet {
 
     // Load the flashlight
     flashlight = loadImage("Flashlight.png");
+
+    // Load the room 1 clues
+    for (int i = 0; i < roomOneClues.length; i++) {
+      roomOneClues[i] = loadImage("Room 1 Clue " + (i + 1) + ".png");
+    }
+
+    // Load the room 2 letters
+    for (int j = 0; j < roomTwoLetters.length; j++) {
+      roomTwoLetters[j] = loadImage("Room 2 Letter " + (j + 1) + ".png");
+    }
+
+    // Load the room 3 letters
+    for (int k = 0; k < roomThreeLetters.length; k++) {
+      roomThreeLetters[k] = loadImage("Room 3 Letter " + (k + 1) + ".png")
+    }
+
+    // Load all of the number buttons to be used in room 1 and 2
+    for (int l = 0; l < numKeys.length; l ++) {
+      numKeys[l] = loadImage("keyboard_" + l + ".png");
+    }
 
     cabinBack = loadImage("Cabin Room Template.png");
     cabinBack.resize(cabinBack.width * width/200, cabinBack.height * height/200);
