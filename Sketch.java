@@ -40,6 +40,9 @@ public class Sketch extends PApplet {
   int intSprite = 1;
   int intCounter = 0;
 
+  // Variable to prioritize left or right movement animations when Alex moves diagonally
+  String strLorR = "";
+
   // Determines Alex's direction for his idle
   String strDir = "Down";
 
@@ -250,15 +253,21 @@ public class Sketch extends PApplet {
     // Some random thingy here I suppose
   }
 
+  // Draws a flashlight for Alex
+  public void drawFlashlight() {
+    image(flashlight, intAlexX - width * 3/4, intAlexY - height * 3/4);
+  }
+
   // Draws Alex to the screen
   public void drawAlex() {
-    if (keyPressed) {
+
+    if (wPressed) {
+        
+      // Makes Alex move forward
+      intAlexY -= intAlexSpeed;
       
-      if (wPressed) {
-        
-        // Makes Alex move forward
-        intAlexY -= intAlexSpeed;
-        
+      // Draws the sprite as long as Alex is not moving diagonally
+      if (!(strLorR.equals("Left") || strLorR.equals("Right"))) {
         // Draws the first sprite
         if (intSprite == 1) {
           image(alexForward1, intAlexX, intAlexY);
@@ -268,11 +277,15 @@ public class Sketch extends PApplet {
           image(alexForward2, intAlexX, intAlexY);
         }
       }
+    }
 
-      else if (sPressed) {
-        
-        // Makes Alex move backward
-        intAlexY += intAlexSpeed;
+    if (sPressed) {
+      
+      // Makes Alex move backward
+      intAlexY += intAlexSpeed;
+      
+      // Draws the sprite as long as Alex is not moving diagonally
+      if (!(strLorR.equals("Left") || strLorR.equals("Right"))) {
         
         // Draws the first sprite
         if (intSprite == 1) {
@@ -283,11 +296,13 @@ public class Sketch extends PApplet {
           image(alexBack2, intAlexX, intAlexY);
         }
       }
-      else if (aPressed) {
-        
-        // Makes Alex move to the left
-        intAlexX -= intAlexSpeed;
-        
+    }
+    if (aPressed) {
+      
+      // Makes Alex move to the left
+      intAlexX -= intAlexSpeed;
+      
+      if (!strLorR.equals("Right")) {
         // Draws the first sprite
         if (intSprite == 1) {
           image(alexLeft1, intAlexX, intAlexY);
@@ -296,12 +311,15 @@ public class Sketch extends PApplet {
         else if (intSprite == 2) {
           image(alexLeft2, intAlexX, intAlexY);
         }
+        // Prioritizes the left moving animation when Alex moves diagonally
+        strLorR = "Left";
       }
-      else if (dPressed) {
+    }
+    if (dPressed) {
 
-        // Makes Alex move to the right
-        intAlexX += intAlexSpeed;
-
+      // Makes Alex move to the right
+      intAlexX += intAlexSpeed;
+      if (!strLorR.equals("Left")) {
         // Draws the first sprite
         if (intSprite == 1) {
           image(alexRight1, intAlexX, intAlexY);
@@ -311,40 +329,42 @@ public class Sketch extends PApplet {
         else if (intSprite == 2) {
           image(alexRight2, intAlexX, intAlexY);
         }
-      }
-      
-      // Increments the sprite counter by 1
-      intCounter++;
-
-      // Changes the sprite when the counter reaches a certain number
-      if (intCounter == 6) {
-
-        // Changes the sprite to the second sprite
-        if (intSprite == 1) {
-          intSprite = 2;
-        }
-        // Changes the sprite to the first sprite
-        else if (intSprite == 2) {
-          intSprite = 1;
-        }
-        // Reset the sprite counter to zero
-        intCounter = 0;
+        // Prioritizes the right moving animation when Alex moves diagonally
+        strLorR = "Right";
       }
     }
-  
+    
+    // Increments the sprite counter by 1
+    intCounter++;
+
+    // Changes the sprite when the counter reaches a certain number
+    if (intCounter == 8) {
+
+      // Changes the sprite to the second sprite
+      if (intSprite == 1) {
+        intSprite = 2;
+      }
+      // Changes the sprite to the first sprite
+      else if (intSprite == 2) {
+        intSprite = 1;
+      }
+      // Reset the sprite counter to zero
+      intCounter = 0;
+    }
+
     // Draws Alex's idle
-    else {
+    if (!keyPressed){
       if (strDir.equals("Down")) {
-        image(alexIdleBack, intAlexX, intAlexY);
+      image(alexIdleBack, intAlexX, intAlexY);
       }
       else if (strDir.equals("Up")) {
-        image(alexIdleForward, intAlexX, intAlexY);
+      image(alexIdleForward, intAlexX, intAlexY);
       }
       else if (strDir.equals("Left")) {
-        image(alexIdleLeft, intAlexX, intAlexY);
+      image(alexIdleLeft, intAlexX, intAlexY);
       }
       else if (strDir.equals("Right")) {
-        image(alexIdleRight, intAlexX, intAlexY);
+      image(alexIdleRight, intAlexX, intAlexY);
       }
     }
   }
@@ -377,10 +397,12 @@ public class Sketch extends PApplet {
     else if (key == 'a') {
       aPressed = false;
       strDir = "Left";
+      strLorR = "";
     }
     else if (key == 'd') {
       dPressed = false;
       strDir = "Right";
+      strLorR = "";
     }
   }
 
