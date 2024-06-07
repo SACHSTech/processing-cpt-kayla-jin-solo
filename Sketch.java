@@ -97,24 +97,16 @@ public class Sketch extends PApplet {
 
     // Load Alex's movement animations
     alexBack1 = loadImage("Alex Back 1.png");
-    alexBack1.resize(alexBack1.width * width/intSizeProportion, alexBack1.height * height/intSizeProportion);
     alexBack2 = loadImage("Alex Back 2.png");
-    alexBack2.resize(alexBack2.width * width/intSizeProportion, alexBack2.height * height/intSizeProportion);
 
     alexForward1 = loadImage("Alex Forward 1.png");
-    alexForward1.resize(alexForward1.width * width/intSizeProportion, alexForward1.height * height/intSizeProportion);
     alexForward2 = loadImage("Alex Forward 2.png");
-    alexForward2.resize(alexForward2.width * width/intSizeProportion, alexForward2.height * height/intSizeProportion);
     
     alexLeft1 = loadImage("Alex Left 1.png");
-    alexLeft1.resize(alexLeft1.width * width/intSizeProportion, alexLeft1.height * height/intSizeProportion);
     alexLeft2 = loadImage("Alex Left 2.png");
-    alexLeft2.resize(alexLeft2.width * width/intSizeProportion, alexLeft2.height * height/intSizeProportion);
 
     alexRight1 = loadImage("Alex Right 1.png");
-    alexRight1.resize(alexRight1.width * width/intSizeProportion, alexRight1.height * height/intSizeProportion);
     alexRight2 = loadImage("Alex Right 2.png");
-    alexRight2.resize(alexRight2.width * width/intSizeProportion, alexRight2.height * height/intSizeProportion);
 
     // Load the flashlight
     flashlight = loadImage("Flashlight.png");
@@ -129,7 +121,6 @@ public class Sketch extends PApplet {
     // Draw start screen
     if (intDraw == 0) {
       drawStartScreen();
-      drawAlex();
     }
     // Draw the story summary
     else if (intDraw == 1) {
@@ -243,7 +234,6 @@ public class Sketch extends PApplet {
   public void drawRoom3() {
     image(cabinBack, 0, 0);
     fill(255, 0, 0);
-    ellipse(200, 200, 200, 200);
 
     // Moves to the second room when Alex moves off the left of the screen
     if (intAlexX < 0) {
@@ -351,7 +341,6 @@ public class Sketch extends PApplet {
         image(alexIdleForward, intAlexX, intAlexY);
       }
       else if (strDir.equals("Left")) {
-        ellipse(20, 20, 20, 20);
         image(alexIdleLeft, intAlexX, intAlexY);
       }
       else if (strDir.equals("Right")) {
