@@ -1,0 +1,10 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "c:\\Users\\salte\\OneDrive\\Desktop\\Minim-2.2.2\\Minim-2.2.2\\library\\jl1.0.1.jar",
+        "c:\\Users\\salte\\OneDrive\\Desktop\\Minim-2.2.2\\Minim-2.2.2\\library\\jsminim.jar",
+        "c:\\Users\\salte\\OneDrive\\Desktop\\Minim-2.2.2\\Minim-2.2.2\\library\\mp3spi1.9.5.jar",
+        "c:\\Users\\salte\\OneDrive\\Desktop\\Minim-2.2.2\\Minim-2.2.2\\library\\tritonus_aos.jar",
+        "c:\\Users\\salte\\OneDrive\\Desktop\\Minim-2.2.2\\Minim-2.2.2\\library\\tritonus_share.jar"
+    ]
+}

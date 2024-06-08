@@ -1,8 +1,12 @@
 import processing.core.PApplet;
 import processing.core.PImage;
+import ddf.minim.*;
 
 public class Sketch extends PApplet {
 	
+  Minim minim;
+  AudioPlayer player;
+  
   // Determines which area is drawn on the screen
   int intDraw = 0;
 
@@ -75,6 +79,14 @@ public class Sketch extends PApplet {
 
   // Load and resize all images
   public void setup() {
+    
+    // Minim library
+    minim = new Minim(this);
+  
+    // Load and loop the background music
+    player = minim.loadFile("Caliginous Hearthfire.mp3");
+    player.loop();
+    
     // Load the start screen and resize
     startScreen = loadImage("Start Screen.png");
     startScreen.resize(startScreen.width * width/918, startScreen.height * height/918);
@@ -122,6 +134,7 @@ public class Sketch extends PApplet {
 
     // Load the flashlight
     flashlight = loadImage("Flashlight.png");
+    flashlight.resize(flashlight.width * 2, flashlight.height * 2);
 
     // Load the room 1 clues
     for (int i = 0; i < roomOneClues.length; i++) {
@@ -135,7 +148,7 @@ public class Sketch extends PApplet {
 
     // Load the room 3 letters
     for (int k = 0; k < roomThreeLetters.length; k++) {
-      roomThreeLetters[k] = loadImage("Room 3 Letter " + (k + 1) + ".png")
+      roomThreeLetters[k] = loadImage("Room 3 Letter " + (k + 1) + ".png");
     }
 
     // Load all of the number buttons to be used in room 1 and 2
@@ -284,7 +297,7 @@ public class Sketch extends PApplet {
 
   // Draws a flashlight for Alex
   public void drawFlashlight() {
-    image(flashlight, intAlexX - width * 3/4, intAlexY - height * 3/4);
+    image(flashlight, intAlexX - width * 13/12, intAlexY - height * 13/12);
   }
 
   // Draws Alex to the screen
@@ -384,16 +397,16 @@ public class Sketch extends PApplet {
     // Draws Alex's idle
     if (!keyPressed){
       if (strDir.equals("Down")) {
-      image(alexIdleBack, intAlexX, intAlexY);
+        image(alexIdleBack, intAlexX, intAlexY);
       }
       else if (strDir.equals("Up")) {
-      image(alexIdleForward, intAlexX, intAlexY);
+        image(alexIdleForward, intAlexX, intAlexY);
       }
       else if (strDir.equals("Left")) {
-      image(alexIdleLeft, intAlexX, intAlexY);
+        image(alexIdleLeft, intAlexX, intAlexY);
       }
       else if (strDir.equals("Right")) {
-      image(alexIdleRight, intAlexX, intAlexY);
+        image(alexIdleRight, intAlexX, intAlexY);
       }
     }
   }
