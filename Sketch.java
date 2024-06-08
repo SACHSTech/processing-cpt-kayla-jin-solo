@@ -1,11 +1,15 @@
 import processing.core.PApplet;
 import processing.core.PImage;
+import java.util.ArrayList;
 import ddf.minim.*;
 
 public class Sketch extends PApplet {
 	
+  // Minim class
   Minim minim;
-  AudioPlayer player;
+
+  // Make the background music an audio player
+  AudioPlayer backgroundMusic;
   
   // Determines which area is drawn on the screen
   int intDraw = 0;
@@ -59,6 +63,21 @@ public class Sketch extends PApplet {
   // Array to store the room 1 clues
   PImage[] roomOneClues = new PImage[4];
 
+  // ArrayLists to store the objects, and x and y values in room 1
+  ArrayList<PImage> oneObjects = new ArrayList<PImage>();
+  ArrayList<Integer> oneObjectX = new ArrayList<Integer>();
+  ArrayList<Integer> oneObjectY = new ArrayList<Integer>();
+
+  // ArrayLists to store the objects, and x and y values in room 2
+  ArrayList<PImage> twoObjects = new ArrayList<PImage>();
+  ArrayList<Integer> twoObjectX = new ArrayList<Integer>();
+  ArrayList<Integer> twoObjectY = new ArrayList<Integer>();
+  
+  // ArrayLists to store the objects, and x and y values in room 3
+  ArrayList<PImage> threeObjects = new ArrayList<PImage>();
+  ArrayList<Integer> threeObjectX = new ArrayList<Integer>();
+  ArrayList<Integer> threeObjectY = new ArrayList<Integer>();
+
   // Array to store the room 2 letters
   PImage[] roomTwoLetters = new PImage[3];
 
@@ -80,12 +99,12 @@ public class Sketch extends PApplet {
   // Load and resize all images
   public void setup() {
     
-    // Minim library
+    // Allows minim to load files
     minim = new Minim(this);
   
     // Load and loop the background music
-    player = minim.loadFile("Caliginous Hearthfire.mp3");
-    player.loop();
+    backgroundMusic = minim.loadFile("Caliginous Hearthfire.mp3");
+    backgroundMusic.loop();
     
     // Load the start screen and resize
     startScreen = loadImage("Start Screen.png");
@@ -179,6 +198,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 3) {
       drawRoom1();
       drawAlex();
+      drawFlashlight();
     }
     // Draw room 2
     else if (intDraw == 4) {
@@ -448,6 +468,15 @@ public class Sketch extends PApplet {
     }
   }
 
+  // Detects collision with objects
+  public void detectCollision(int intObsX, int intObsY, int intObsW, int intObsH) {
+
+    if (intAlexX + alexIdleForward.width > intObsX && intAlexX < intObsX + intObsW && intAlexY + alexIdleForward.height > intObsY && intAlexY < intObsY + intObsH) {
+      intAlexX = constrain(intAlexX, intObsX + intObsW, width - alexIdleForward.width);
+      intAlexY = constrain(intAlexY, intObsY + intObsH, height - alexIdleForward.height);
+    }
+  }
+
   // Checks when the mouse is pressed
   public void mousePressed() {
     
@@ -495,4 +524,5 @@ public class Sketch extends PApplet {
 
     }
   }
+  
 }
