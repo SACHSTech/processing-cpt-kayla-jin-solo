@@ -1,6 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import ddf.minim.*;
 
 public class Sketch extends PApplet {
@@ -38,6 +39,9 @@ public class Sketch extends PApplet {
   // Alex's coordinates
   int intAlexX,intAlexY;
 
+  // Alex's previous position
+  int intAlexPrevX, intAlexPrevY;
+
   // Alex's Speed
   int intAlexSpeed = 6;
 
@@ -57,32 +61,35 @@ public class Sketch extends PApplet {
   boolean aPressed = false;
   boolean dPressed = false;
 
+  // Checks for collision
+  boolean boolCollide = false;
+
   // Cabin background for all three rooms
   PImage cabinBack;
 
   // Array to store the room 1 clues
   PImage[] roomOneClues = new PImage[4];
 
-  // ArrayLists to store the objects, and x and y values in room 1
+  // ArrayLists (for flexibility when adding objects to rooms) to store the objects, and x and y values in room 1
   ArrayList<PImage> oneObjects = new ArrayList<PImage>();
   ArrayList<Integer> oneObjectX = new ArrayList<Integer>();
   ArrayList<Integer> oneObjectY = new ArrayList<Integer>();
+
+  // Array to store the room 2 letters
+  PImage[] roomTwoLetters = new PImage[3];
 
   // ArrayLists to store the objects, and x and y values in room 2
   ArrayList<PImage> twoObjects = new ArrayList<PImage>();
   ArrayList<Integer> twoObjectX = new ArrayList<Integer>();
   ArrayList<Integer> twoObjectY = new ArrayList<Integer>();
   
+  // Array to store the room 3 letters
+  PImage[] roomThreeLetters = new PImage[6];
+
   // ArrayLists to store the objects, and x and y values in room 3
   ArrayList<PImage> threeObjects = new ArrayList<PImage>();
   ArrayList<Integer> threeObjectX = new ArrayList<Integer>();
   ArrayList<Integer> threeObjectY = new ArrayList<Integer>();
-
-  // Array to store the room 2 letters
-  PImage[] roomTwoLetters = new PImage[3];
-
-  // Array to store the room 3 letters
-  PImage[] roomThreeLetters = new PImage[6];
 
   // Array to store the number keys for the passwords in room 1 and 2
   PImage[] numKeys = new PImage[10];
@@ -94,6 +101,18 @@ public class Sketch extends PApplet {
     // Sets Alex's initial position
     intAlexX = width / 2;
     intAlexY = height / 2;
+
+    // Adds the x and y values of the objects in room 1 based on the window size into two arrays
+    Collections.addAll(oneObjectX, 100, 200, 300, 400);
+    Collections.addAll(oneObjectY, 100, 200, 300, 400);
+
+    // Adds the x and y values of the objects in room 2 based on the window size into two arrays
+    Collections.addAll(twoObjectX, 100, 10);
+    Collections.addAll(twoObjectY, 10, 10);
+
+    // Adds the x and y values of the objects in room 3 based on the window size into two arrays
+    Collections.addAll(threeObjectX, 100, 10);
+    Collections.addAll(threeObjectY, 10, 10);
   }
 
   // Load and resize all images
@@ -160,14 +179,47 @@ public class Sketch extends PApplet {
       roomOneClues[i] = loadImage("Room 1 Clue " + (i + 1) + ".png");
     }
 
+    // Load the objects in room 1 and add them to an ArrayList
+    // Array for the names of the objects in room 1
+    String[] roomOneObjNames = {"Small Couch.png", "Couch.png", "Table.png", "Chair.png"};
+
+    // Adds each object in room 1 into the room 1 ArrayList
+    for (String name : roomOneObjNames) {
+      
+      PImage img = loadImage(name);
+      oneObjects.add(img);
+    }
+
     // Load the room 2 letters
     for (int j = 0; j < roomTwoLetters.length; j++) {
       roomTwoLetters[j] = loadImage("Room 2 Letter " + (j + 1) + ".png");
     }
 
+    // Load the objects in room 2 and add them to an ArrayList
+    // Array for the names of the objects in room 2
+    String[] roomTwoObjNames = {"Couch.png", "Table.png"};
+
+    // Adds each object in room 2 into the room 2 ArrayList
+    for (String name2 : roomTwoObjNames) {
+
+      PImage img2 = loadImage(name2);
+      twoObjects.add(img2);
+    }
+
     // Load the room 3 letters
     for (int k = 0; k < roomThreeLetters.length; k++) {
       roomThreeLetters[k] = loadImage("Room 3 Letter " + (k + 1) + ".png");
+    }
+
+    // Load the objects in room 2 and add them to an ArrayList
+    // Array for the names fo the objects in room 3
+    String[] roomThreeObjNames = {"Table.png", "Small Couch 2.png"};
+    
+    // Adds each object in room 3 into the room 3 ArrayList
+    for (String name3 : roomThreeObjNames) {
+
+      PImage img3 = loadImage(name3);
+      threeObjects.add(img3);
     }
 
     // Load all of the number buttons to be used in room 1 and 2
@@ -182,6 +234,7 @@ public class Sketch extends PApplet {
 
   // Everything drawn to the screen
   public void draw() {
+    
     // Draw start screen
     if (intDraw == 0) {
       drawStartScreen();
@@ -210,6 +263,11 @@ public class Sketch extends PApplet {
       drawRoom3();
       drawAlex();
     }
+
+    // Temporary mouse coordinates for positioning purposes
+    textSize(16); // Set the text size
+    String coords = "Mouse X: " + mouseX + ", Mouse Y: " + mouseY;
+    text(coords, 10, height - 20); // Display the coordinates at the bottom left
   }
   
   // Draws the start screen when intDraw = 0
@@ -272,7 +330,19 @@ public class Sketch extends PApplet {
 
   // Draws the first room when intDraw = 3
   public void drawRoom1() {
+    
+    // Draws the background
     image(cabinBack, 0, 0);
+    
+    // Draws the objects in the room
+    for (int a = 0; a < oneObjects.size(); a++) {
+      image(oneObjects.get(a), oneObjectX.get(a), oneObjectY.get(a));
+
+      // Checks collision in the objects in the room
+      detectCollision(oneObjectX.get(a), oneObjectY.get(a), oneObjects.get(a).width, oneObjects.get(a).height);
+    }
+
+    // Allows Alex to move between rooms
     if (intAlexX > width) {
       intDraw = 4;
       intAlexX = 1;
@@ -281,8 +351,18 @@ public class Sketch extends PApplet {
 
   // Draws the second room when intDraw = 4
   public void drawRoom2() {
+    
+    // Draws the background
     image(cabinBack, 0, 0);
     
+    // Draws the objects in the room
+    for (int b = 0; b < twoObjects.size(); b++) {
+      image(twoObjects.get(b), twoObjectX.get(b), twoObjectY.get(b));
+
+      // Checks collision in the objects in the room
+      detectCollision(twoObjectX.get(b), twoObjectY.get(b), twoObjects.get(b).width, twoObjects.get(b).height);
+    }
+
     // Moves to the first room when Alex moves off to the left of the screen
     if (intAlexX < 0) {
       intDraw = 3;
@@ -297,8 +377,17 @@ public class Sketch extends PApplet {
 
   // Draws the third room when intDraw = 5
   public void drawRoom3() {
+    
+    // Draws the background
     image(cabinBack, 0, 0);
-    fill(255, 0, 0);
+
+    // Draws the objects in the room
+    for (int c = 0; c < threeObjects.size(); c++) {
+      image(threeObjects.get(c), threeObjectX.get(c), threeObjectY.get(c));
+
+      // Checks collision in the objects in the room
+      detectCollision(threeObjectX.get(c), threeObjectY.get(c), threeObjects.get(c).width, threeObjects.get(c).height);
+    }
 
     // Moves to the second room when Alex moves off the left of the screen
     if (intAlexX < 0) {
@@ -324,10 +413,12 @@ public class Sketch extends PApplet {
   public void drawAlex() {
 
     if (wPressed) {
-        
+
+      intAlexPrevY = intAlexY;
+
       // Makes Alex move forward
       intAlexY -= intAlexSpeed;
-      
+
       // Draws the sprite as long as Alex is not moving diagonally
       if (!(strLorR.equals("Left") || strLorR.equals("Right"))) {
         // Draws the first sprite
@@ -343,6 +434,8 @@ public class Sketch extends PApplet {
 
     if (sPressed) {
       
+      intAlexPrevY = intAlexY;
+
       // Makes Alex move backward
       intAlexY += intAlexSpeed;
       
@@ -360,10 +453,12 @@ public class Sketch extends PApplet {
       }
     }
     if (aPressed) {
-      
+  
+      intAlexPrevX = intAlexX;
+
       // Makes Alex move to the left
       intAlexX -= intAlexSpeed;
-      
+
       if (!strLorR.equals("Right")) {
         // Draws the first sprite
         if (intSprite == 1) {
@@ -379,8 +474,11 @@ public class Sketch extends PApplet {
     }
     if (dPressed) {
 
+      intAlexPrevX = intAlexX;
+
       // Makes Alex move to the right
       intAlexX += intAlexSpeed;
+
       if (!strLorR.equals("Left")) {
         // Draws the first sprite
         if (intSprite == 1) {
@@ -468,12 +566,14 @@ public class Sketch extends PApplet {
     }
   }
 
-  // Detects collision with objects
+  // Detects collision with objects based on the x, y, width, and height parameters
   public void detectCollision(int intObsX, int intObsY, int intObsW, int intObsH) {
 
     if (intAlexX + alexIdleForward.width > intObsX && intAlexX < intObsX + intObsW && intAlexY + alexIdleForward.height > intObsY && intAlexY < intObsY + intObsH) {
-      intAlexX = constrain(intAlexX, intObsX + intObsW, width - alexIdleForward.width);
-      intAlexY = constrain(intAlexY, intObsY + intObsH, height - alexIdleForward.height);
+
+      intAlexX = intAlexPrevX;
+      intAlexY = intAlexPrevY;
+      
     }
   }
 
@@ -524,5 +624,4 @@ public class Sketch extends PApplet {
 
     }
   }
-  
 }
