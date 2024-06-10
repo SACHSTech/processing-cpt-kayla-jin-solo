@@ -61,6 +61,10 @@ public class Sketch extends PApplet {
   boolean aPressed = false;
   boolean dPressed = false;
 
+  // Image to store the e key and boolean to determine when it is pushed
+  PImage interactKey;
+  boolean ePushed = false;
+
   // Cabin background for all three rooms
   PImage cabinBack;
 
@@ -287,6 +291,9 @@ public class Sketch extends PApplet {
     cabinBack = loadImage("Cabin Room Template.png");
     cabinBack.resize(cabinBack.width * width/200, cabinBack.height * height/200);
 
+    interactKey = loadImage("keyboard_e_outline.png");
+    interactKey.resize(width / 15, height / 15);
+
   }
 
   // Everything drawn to the screen
@@ -308,6 +315,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 3) {
       drawRoom1(); 
       drawAlex();
+      detectWallCollision();
       drawFlashlight();
       drawCurrentClue();
    
@@ -316,12 +324,14 @@ public class Sketch extends PApplet {
     else if (intDraw == 4) {
       drawRoom2();
       drawAlex();
+      detectWallCollision();
       drawFlashlight();
     }
     // Draw room 3
     else if (intDraw == 5) {
       drawRoom3();
       drawAlex();
+      detectWallCollision();
       drawFlashlight();
     }
 
@@ -510,21 +520,39 @@ public class Sketch extends PApplet {
       
       // Saves the clue image
       currentClueImage = clImg;
-    }
-  }
+      image(interactKey, intAlexX + alexIdleForward.width / 2, intAlexY - alexIdleForward.height / 2);
 
+      }
+  
+    }
+  
   // Draws the current clue on the screen
   private void drawCurrentClue() {
-    if (currentClueImage != null) {
     
+    // Sets e pushed to true when there is an image in currentClueImage and the e key is pressed
+    if (currentClueImage != null && keyPressed && key == 'e') {
+      ePushed = true;
+    }
+    // Draws the clue on the screen after the e key is pressed
+    else if (ePushed && currentClueImage != null) {
+      
       imageMode(CENTER);
       image(currentClueImage, width / 2, height / 2);
       imageMode(CORNER);
+    } 
+    
+    // Sets e pushed to false when there is no image in currentClueImage
+    else {
+      ePushed = false;
     }
 }
 
-  public void drawInteraction(PImage pInteract) {
-     
+  public void detectWallCollision() {
+     if (intAlexX - alexIdleForward.width / 2 < width * 66/800 || intAlexX + alexIdleForward.width / 2 > 739 || intAlexY + alexIdleForward.height / 2 > width * 776/800 || intAlexY < height * 209/800){
+      
+      intAlexX = intAlexPrevX;
+      intAlexY = intAlexPrevY;
+     }
   }
 
   public void drawEnd() {
