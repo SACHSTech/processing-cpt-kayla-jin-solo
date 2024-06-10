@@ -101,7 +101,11 @@ public class Sketch extends PApplet {
   ArrayList<Integer> threeObjectX = new ArrayList<Integer>();
   ArrayList<Integer> threeObjectY = new ArrayList<Integer>();
 
-  // 
+  // Related arrays to store the doors
+  PImage[] roomDoors = new PImage[6];
+  int[] roomDoorX;
+  int[] roomDoorY;
+  PImage[] roomDoorDisplay = new PImage[6];
 
   // Array to store the number keys for the passwords in room 1 and 2
   PImage[] numKeys = new PImage[10];
@@ -143,8 +147,8 @@ public class Sketch extends PApplet {
     roomTwoPageY = new int[]{height * 417/800, height * 291/800, height * 260/800};
 
     // Intializes the x and y values of the pages in room three based on the window size
-    roomThreePageX = new int[]{10, 10, 10, 10};
-    roomThreePageY = new int[]{10, 10, 10, 10};
+    roomThreePageX = new int[]{width * 163/800, width * 549/800, width * 598/800, width * 321/800, width * 406/800, width * 246/800};
+    roomThreePageY = new int[]{height * 689/800, height * 382/800, height * 679/800, height * 446/800, height * 530/800, height * 236/800};
 
   }
 
@@ -248,6 +252,7 @@ public class Sketch extends PApplet {
     // Load the room 2 letters
     for (int j = 0; j < roomTwoLetters.length; j++) {
       roomTwoLetters[j] = loadImage("Room 2 Letter " + (j + 1) + ".png");
+      roomTwoLetters[j].resize(roomTwoLetters[j].width / 3, roomTwoLetters[j].height / 3);
     }
 
     // Load the objects in room 2 and add them to an ArrayList
@@ -258,16 +263,19 @@ public class Sketch extends PApplet {
     for (String name2 : roomTwoObjNames) {
 
       PImage img2 = loadImage(name2);
+      img2.resize(width * img2.width / 800, height * img2.height / 800);
       twoObjects.add(img2);
     }
     // Load the room 3 pages
     for (int o = 0; o < roomThreePages.length; o++) {
       roomThreePages[o] = loadImage("Letter Page.png");
+      roomThreePages[o].resize(width * roomThreePages[o].width / 800, height * roomThreePages[o].height / 800);
     }
 
     // Load the room 3 letters
     for (int k = 0; k < roomThreeJournals.length; k++) {
       roomThreeJournals[k] = loadImage("Room 3 Letter " + (k + 1) + ".png");
+      roomThreeJournals[k].resize(roomThreeJournals[k].width / 3, roomThreeJournals[k].height / 3);
     }
 
     // Load the objects in room 2 and add them to an ArrayList
@@ -281,6 +289,16 @@ public class Sketch extends PApplet {
 
       PImage img3 = loadImage(name3);
       threeObjects.add(img3);
+    }
+
+    // Load all of the doors drawn on the screen
+    for (int x = 0; x < roomDoors.length; x++) {
+      roomDoors[x] = loadImage("Door.png");
+    }
+
+    // Load the image that appears when the doors are interacted with
+    for (int y = 0; y < roomDoorDisplay.length; y++) {
+      roomDoorDisplay[y] = loadImage("Door " + (y + 1) + " Text.png");
     }
 
     // Load all of the number buttons to be used in room 1 and 2
@@ -315,7 +333,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 3) {
       drawRoom1(); 
       drawAlex();
-      detectWallCollision();
+      //detectWallCollision();
       drawFlashlight();
       drawCurrentClue();
    
@@ -324,15 +342,17 @@ public class Sketch extends PApplet {
     else if (intDraw == 4) {
       drawRoom2();
       drawAlex();
-      detectWallCollision();
+      //detectWallCollision();
       drawFlashlight();
+      drawCurrentClue();
     }
     // Draw room 3
     else if (intDraw == 5) {
       drawRoom3();
       drawAlex();
-      detectWallCollision();
+      //detectWallCollision();
       drawFlashlight();
+      drawCurrentClue();
     }
 
     // Temporary mouse coordinates for positioning purposes
@@ -472,6 +492,8 @@ public class Sketch extends PApplet {
   // Draws the third room when intDraw = 5
   public void drawRoom3() {
 
+    currentClueImage = null;
+
     // Draws the background
     image(cabinBack, 0, 0);
 
@@ -497,9 +519,6 @@ public class Sketch extends PApplet {
       intAlexX = width;
     }
     // Moves to the ending cutscene
-    else if (intAlexX > width) {
-      // Some end screen thing here
-    }
   }
 
   // Detects collision with objects based on the x, y, width, and height parameters
