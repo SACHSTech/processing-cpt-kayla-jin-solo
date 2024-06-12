@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,9 @@ public class Sketch extends PApplet {
   // Make the background music an audio player
   AudioPlayer backgroundMusic;
   
+  // PlayfairDisplay font
+  PFont playfairDisplay;
+
   // Determines which area is drawn on the screen
   int intDraw = 0;
 
@@ -101,15 +105,12 @@ public class Sketch extends PApplet {
   ArrayList<Integer> threeObjectX = new ArrayList<Integer>();
   ArrayList<Integer> threeObjectY = new ArrayList<Integer>();
 
-  // Array to store the number keys for the passwords in room 1 and 2
-  PImage[] numKeys = new PImage[10];
-
   // Saves the current clue image
   PImage currentClueImage = null;
 
   // Sets the passwords of the doors
-  String[] strPasswords = new String [3];
-  String[] strTargPass = {"2413", "666", "Alex"};
+  String[] strPasswords = {"", "", ""};
+  String[] strTargPass = {"2    4    1    3    ", "666", "Alex"};
 
   // Array for the door objects drawn in the rooms
   PImage[] doors = new PImage[6];
@@ -133,13 +134,27 @@ public class Sketch extends PApplet {
   // Variable to store the current door the player is interacting with
   int intCurDoor;
 
+  // The enter button for the user to enter the password
+  PImage enterButton;
+
+  // Related arrays for the x and y coordinates of the enter button
+  int[] enterX;
+  int[]enterY;
+
   // Related arrays for the button images, x coordinates, and y coordinates for the first password
   PImage[] doorFirstButt = new PImage[4];
   int[] doorFirstX;
   int[] doorFirstY;
 
-  // Number of attempts for the first password
-  int intAttempts = 3;
+  // Related arrays for the button images, x coordinates, and y coordinates for the second password
+  PImage[] doorSecButt = new PImage[10];
+  int[] doorSecX;
+  int[] doorSecY;
+
+  // Number of attempts for the first, second, and third password
+  int intFirAtmpts = 3;
+  int intSecAtmpts = 3;
+  int intThiAtmpts = 3;
 
   // Set the size of the window
   public void settings() {
@@ -183,20 +198,27 @@ public class Sketch extends PApplet {
     doorY = new int[] {height * 426/800, height * 426/800, height * 426/800, height * 426/800, height * 426/800, height * 426/800};
 
     // Set the x and y positions of the buttons in the first password
-    doorFirstX = new int[] {453, 627, 453, 627};
-    doorFirstY = new int[] {659, 659, 718, 718};
+    doorFirstX = new int[] {373, 471, 569, 666};
+    doorFirstY = new int[] {674, 674, 674, 674};
+
+    // Set the x and y positions of the enter button for each of the three passwords
+    enterX = new int[] {666, 666, 666};
+    enterY = new int[] {588, 588, 588};
   }
 
   // Load and resize all images
   public void setup() {
     
-    // Allows minim to load files
+    // Allows minim to load audio files
     minim = new Minim(this);
   
     // Load and loop the background music
     backgroundMusic = minim.loadFile("Caliginous Hearthfire.mp3");
     backgroundMusic.loop();
-    
+
+    playfairDisplay = createFont("PlayfairDisplay-VariableFont_wght.ttf", width * 128/800);
+    textFont(playfairDisplay);
+
     // Load the start screen and resize
     startScreen = loadImage("Start Screen.png");
     startScreen.resize(startScreen.width * width/918, startScreen.height * height/918);
@@ -329,12 +351,12 @@ public class Sketch extends PApplet {
     // Load all of the number buttons to be used in room 1
     for (int e = 0; e < doorFirstButt.length; e++) {
       doorFirstButt[e] = loadImage("keyboard_" + (e + 1) + ".png");
-      doorFirstButt[e].resize(width * doorFirstButt[e].width/800, width * doorFirstButt[e].height/800);
+      doorFirstButt[e].resize(width * 96/800, height * 96/800);
     } 
 
     // Load all of the number buttons to be used in room 2
-    for (int l = 0; l < numKeys.length; l ++) {
-      numKeys[l] = loadImage("keyboard_" + l + ".png");
+    for (int l = 0; l < doorSecButt.length; l ++) {
+      doorSecButt[l] = loadImage("keyboard_" + l + ".png");
     }
 
     cabinBack = loadImage("Cabin Room Template.png");
@@ -351,6 +373,11 @@ public class Sketch extends PApplet {
     // Load the stuff the doors show
     door1Text = loadImage("Door 1 Text.png");
     door2Unpassed = loadImage("Door 2 Unpassed.png");
+    door2Unpassed.resize(width * door2Unpassed.width/800, height * door2Unpassed.height/800);
+    door2Passed = loadImage("Room 1 Code Pass.png");
+
+    enterButton = loadImage("enter.png");
+    enterButton.resize(width * 96/800, height * 96/800);
 
   } 
 
@@ -373,7 +400,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 3) {
       drawRoom1(); 
       drawAlex();
-      detectWallCollision();
+      //detectWallCollision();
       drawFlashlight();
       drawCurrentClue();
       doorResult();
@@ -599,30 +626,55 @@ public class Sketch extends PApplet {
   }
 
   // Performs the operation of each door
+
+  // BE CAREFUL TO NOT MAKE THE PLAYER MOVE BETWEEN ROOMS AFTER ENTERING ONE DOOR
   public void doorResult() {
 
     if (intCurDoor == 0) {
-    
-      imageMode(CENTER);
-      image(door1Text, width / 2, height / 2);
-      imageMode(CORNER);
+      image(door1Text, 0, 0);
       
     }
     else if (intCurDoor == 1) {
       
       if (!boolDoorUnlocked[1]) {
-        imageMode(CENTER);
-        image(door2Unpassed, width / 2, height / 2);
-        imageMode(CORNER);
+        
+        // Display the background for the puzzle
+        image(door2Unpassed, 0, 0);
 
+        // Display the four number keys to be clicked on
         for(int f = 0; f < doorFirstButt.length; f++) {
-          
+          image(doorFirstButt[f], doorFirstX[f], doorFirstY[f]);
         }
 
+        // Display the password text
+        fill(255, 255, 255);
+        textSize(width * 50/800);
+        text(strPasswords[0], width * 390/800, height * 650/800);
+        
+        // Display the number of attempts left
+        fill(255, 0, 0);
+        textSize(width * 20/800);
+        
+        // Turns the number of attempts left red when there is only one attempt left
+        if (intFirAtmpts == 1) {
+          fill(255, 0, 0);
+          text("Attempts Left: " + intFirAtmpts, width * 20/800, height * 30/800);
+        }
+        // Ends the game when the player runs out of attempts
+        else if (intFirAtmpts == 0) {
+          // Some end game thing here
+        }
+        // Draws the number of attempts left white 
+        else {
+          fill(255, 255, 255);
+          text("Attempts Left: " + intFirAtmpts, width * 20/800, height * 30/800);
+        }
+        // Draws the enter button
+        image(enterButton, enterX[0], enterY[0]);
       }
       
       else if (boolDoorUnlocked[1]) {
-        intDraw = 4;
+        image(door2Passed, 0, 0);
       }
     }
     else if (intCurDoor == 2) {
@@ -902,6 +954,24 @@ public class Sketch extends PApplet {
     // Checks the players mouse interactions in the first room
     else if (intDraw == 3) {
       
+      // Updates the password based on the number keys the player clicks on
+      for (int h = 0; h < doorFirstX.length; h++) {
+        if (mouseX > doorFirstX[h] && mouseX < doorFirstX[h] + doorFirstButt[h].width && mouseY > doorFirstY[h] && mouseY < doorFirstY[h] + doorFirstButt[h].height) {
+          strPasswords[0] += (h + 1) + "    ";
+        }
+      }
+      // Checks if the enter button has been pushed
+      if (mouseX > enterX[0] && mouseX < enterX[0] + enterButton.width && mouseY > enterY[0] && mouseY < enterY[0] + enterButton.height) {
+        if (strPasswords[0].equals(strTargPass[0])) {
+        
+          // Unlocks the door
+          boolDoorUnlocked[1] = true;
+        }
+        else {
+          intFirAtmpts--;
+          strPasswords[0] = "";
+        }
+      }
     }
     // Checks the players mouse interactions in the second room
     else if (intDraw == 4) {
@@ -912,4 +982,5 @@ public class Sketch extends PApplet {
 
     }
   }
+
 }
