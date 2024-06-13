@@ -151,6 +151,10 @@ public class Sketch extends PApplet {
   int[] doorSecX = new int[10];
   int[] doorSecY = new int[10];
 
+  PImage[] doorThirButt = new PImage[26];
+  int[] doorThirX = new int[26];
+  int[] doorThirY = new int[26];
+
   // Number of attempts for the first, second, and third password
   int intFirAtmpts = 3;
   int intSecAtmpts = 3;
@@ -201,8 +205,8 @@ public class Sketch extends PApplet {
     doorY = new int[] {height * 426/800, height * 426/800, height * 426/800, height * 426/800, height * 426/800, height * 426/800};
 
     // Set the x and y positions of the buttons in the first password
-    doorFirstX = new int[] {373, 471, 569, 666};
-    doorFirstY = new int[] {674, 674, 674, 674};
+    doorFirstX = new int[] {width * 373/800, width * 471/800, width * 569/800, width * 666/800};
+    doorFirstY = new int[] {height * 674/800, height * 674/800, height * 674/800, height * 674/800};
 
     // Starting x and y values of the buttons in the second password
     int intStartX = width * 100/800;
@@ -221,9 +225,54 @@ public class Sketch extends PApplet {
       intStartX += width * 120/800;
     }
 
+    int intStartX2 = width * 100/800;
+    int intStartY2 = height * 400/800;
+    int intNumElemRow = 7;
+    int intIndex = 0;
+
+    // Set the x and y positions of the buttons in the third password with four rows, and 7, 6, 7, 6 buttons in each row
+    
+    for (int y = 0; y < 4; y++) {
+      
+      if (intNumElemRow == 7) {
+        
+        for (int z = 0; z < intNumElemRow; z++) {
+          
+          doorThirX[intIndex] = intStartX2;
+          doorThirY[intIndex] = intStartY2;
+          intStartX2 += width * 100;
+
+          if (intStartX2 >= 700) {
+            intStartX2 = width * 150/800;
+            intStartY2 += width * 100/800;
+            intNumElemRow = 6;
+          }
+          intIndex += 1;
+        }
+      }
+      else if (intNumElemRow == 6) {
+        
+        for (int h = 0; h < intNumElemRow; h++) {
+          
+          doorThirX[y] = intStartX2;
+          doorThirY[y] = intStartY2;
+          intStartX2 += width * 100/800;
+
+        if (intStartX2 >= width * 650/800) {
+          intStartX2 = width * 100/800;
+          intStartY2 += width * 100/800;
+          intNumElemRow = 7;
+          }
+          intIndex += 1;
+        }
+      }
+    }
+    
+
     // Set the x and y positions of the enter button for each of the three passwords
     enterX = new int[] {width * 666/800, width * 580/800, 666};
     enterY = new int[] {height * 588/800, height * 280/800, 588};
+
   }
 
   // Load and resize all images
@@ -380,6 +429,12 @@ public class Sketch extends PApplet {
       doorSecButt[l].resize(width * 96/800, height * 96/800);
     }
 
+    // Load all of the alphabet buttons to be used in room 3
+    for (int x = 0; x < doorThirButt.length; x++) {
+      doorThirButt[x] = loadImage("Alphabet " + (x + 1) + ".png");
+      doorThirButt[x].resize(width * 96/800, height * 96/800);
+    }
+
     cabinBack = loadImage("Cabin Room Template.png");
     cabinBack.resize(cabinBack.width * width/200, cabinBack.height * height/200);
 
@@ -403,6 +458,8 @@ public class Sketch extends PApplet {
     door4Passed.resize(width, height);
     door6Unpassed = loadImage("Room 3 Code Unpassed.png");
     door6Unpassed.resize(width, height);
+    door6Passed = loadImage("Room 3 Code Passed.png");
+    door6Passed.resize(width, height);
 
 
     enterButton = loadImage("enter.png");
@@ -631,6 +688,12 @@ public class Sketch extends PApplet {
       detectInteraction(roomThreeJournals[s], roomThreePageX[s], roomThreePageY[s], roomThreePages[s].width, roomThreePages[s].height);
     }
 
+    // Draws the doors in the room
+    image(doors[4], doorX[4], doorY[4]);
+    detectDoorInter(doorX[4], doorY[4], doors[4].width, doors[4].height, 4);
+    image(doors[3], doorX[5], doorY[5]);
+    detectDoorInter(doorX[5], doorY[5], doors[5].width, doors[5].height, 5);
+
     // Moves to the second room when Alex moves off the left of the screen
     if (intAlexX < 0) {
       intDraw = 4;
@@ -773,7 +836,46 @@ public class Sketch extends PApplet {
 
     }
     else if (intCurDoor == 5) {
+      if (!boolDoorUnlocked[5]) {
+        
+        // Display the background for the puzzle
+        image(door6Unpassed, 0, 0);
 
+        // Display the 26 alphabet keys to click on
+        for (int k = 0; k < doorThirButt.length; k++) {
+          image(doorThirButt[k], doorThirX[k], doorThirY[k]);
+        }
+
+        // Display the password text
+        fill(255, 255, 255);
+        textSize(width * 50/800);
+        text(strPasswords[2], width * 122/800, height * 355/800);
+        
+        // Determine the text size
+        textSize(width * 20/800);
+        
+        // Turns the number of attempts left red when there is only one attempt left
+        if (intThiAtmpts == 1) {
+          fill(255, 0, 0);
+          text("Attempts Left: " + intThiAtmpts, width * 20/800, height * 30/800);
+        }
+        // Ends the game when the player runs out of attempts
+        else if (intThiAtmpts == 0) {
+          intDraw = 6;
+        }
+        // Draws the number of attempts left white 
+        else {
+          fill(255, 255, 255);
+          text("Attempts Left: " + intThiAtmpts, width * 20/800, height * 30/800);
+        }
+        // Draws the enter button
+        image(enterButton, enterX[2], enterY[2]);
+      }
+      
+      // Draws the passed background when the player enters the correct password
+      else if (boolDoorUnlocked[3]) {
+        image(door6Passed, 0, 0);
+      }
     }  
 
   }
