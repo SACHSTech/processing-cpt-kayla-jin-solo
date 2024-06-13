@@ -110,7 +110,7 @@ public class Sketch extends PApplet {
 
   // Sets the passwords of the doors
   String[] strPasswords = {"", "", ""};
-  String[] strTargPass = {"2 4 1 3 ", "6 6 6 ", "Alex"};
+  String[] strTargPass = {"2 4 1 3 ", "6 6 6 ", "A L E X "};
 
   // Array for the door objects drawn in the rooms
   PImage[] doors = new PImage[6];
@@ -151,21 +151,22 @@ public class Sketch extends PApplet {
   int[] doorSecX = new int[10];
   int[] doorSecY = new int[10];
 
-  PImage[] doorThirButt = new PImage[26];
-  int[] doorThirX = new int[26];
-  int[] doorThirY = new int[26];
+  PImage[] doorThirButt = new PImage[25];
+  int[] doorThirX = new int[25];
+  int[] doorThirY = new int[25];
 
   // Number of attempts for the first, second, and third password
   int intFirAtmpts = 3;
   int intSecAtmpts = 3;
   int intThiAtmpts = 3;
 
-  // PImage goodEnding;
+  // Images to store the two endings of the game
+  PImage goodEnding;
   PImage badEnding;
 
   // Set the size of the window
   public void settings() {
-    size(800, 800);
+    size(600, 600);
 
     // Sets Alex's initial position
     intAlexX = width / 2;
@@ -226,52 +227,26 @@ public class Sketch extends PApplet {
     }
 
     int intStartX2 = width * 100/800;
-    int intStartY2 = height * 400/800;
-    int intNumElemRow = 7;
-    int intIndex = 0;
+    int intStartY2 = height * 300/800;
 
     // Set the x and y positions of the buttons in the third password with four rows, and 7, 6, 7, 6 buttons in each row
-    
-    for (int y = 0; y < 4; y++) {
-      
-      if (intNumElemRow == 7) {
-        
-        for (int z = 0; z < intNumElemRow; z++) {
-          
-          doorThirX[intIndex] = intStartX2;
-          doorThirY[intIndex] = intStartY2;
-          intStartX2 += width * 100;
 
-          if (intStartX2 >= 700) {
-            intStartX2 = width * 150/800;
-            intStartY2 += width * 100/800;
-            intNumElemRow = 6;
-          }
-          intIndex += 1;
-        }
-      }
-      else if (intNumElemRow == 6) {
-        
-        for (int h = 0; h < intNumElemRow; h++) {
-          
-          doorThirX[y] = intStartX2;
-          doorThirY[y] = intStartY2;
-          intStartX2 += width * 100/800;
+    for (int y = 0; y < doorThirButt.length; y++) {
+      doorThirX[y] = intStartX2;
+      doorThirY[y] = intStartY2;
 
-        if (intStartX2 >= width * 650/800) {
-          intStartX2 = width * 100/800;
-          intStartY2 += width * 100/800;
-          intNumElemRow = 7;
-          }
-          intIndex += 1;
-        }
+      if (intStartX2 == width * 580/800) {
+        intStartX2 = width * -20/800;
+        intStartY2 += width * 100/800;
       }
+      intStartX2 += width * 120/800;
     }
+  
     
 
     // Set the x and y positions of the enter button for each of the three passwords
-    enterX = new int[] {width * 666/800, width * 580/800, 666};
-    enterY = new int[] {height * 588/800, height * 280/800, 588};
+    enterX = new int[] {width * 666/800, width * 580/800, width * 580/800};
+    enterY = new int[] {height * 588/800, height * 280/800, height * 200/800};
 
   }
 
@@ -352,11 +327,13 @@ public class Sketch extends PApplet {
     // Load the room 1 pages
     for (int m = 0; m < roomOnePages.length; m++) {
       roomOnePages[m] = loadImage("Photo Page.png");
+      roomOnePages[m].resize(width * roomOnePages[m].width/800, height * roomOnePages[m].height/800);
     }
 
     // Load the room 1 clues
     for (int i = 0; i < roomOneClues.length; i++) {
       roomOneClues[i] = loadImage("Room 1 Clue " + (i + 1) + ".png");
+      roomOneClues[i].resize(width * roomOneClues[i].width/800, height * roomOneClues[i].height/800);
     }
 
     // Load the objects in room 1 and add them to an ArrayList
@@ -374,6 +351,7 @@ public class Sketch extends PApplet {
     // Load the room 2 pages
     for (int n = 0; n < roomTwoPages.length; n++) {
       roomTwoPages[n] = loadImage("Letter Page.png");
+      roomTwoPages[n].resize(width * roomTwoPages[n].width/800, roomTwoPages[n].height/800);
     }
     // Load the room 2 letters
     for (int j = 0; j < roomTwoLetters.length; j++) {
@@ -444,10 +422,12 @@ public class Sketch extends PApplet {
     // Load the door images
     for (int s = 0; s < doors.length; s++) {
       doors[s] = loadImage("Door.png");
+      doors[s].resize(width * doors[s].width/800, height * doors[s].height/800);
     }
 
     // Load the stuff the doors show
     door1Text = loadImage("Door 1 Text.png");
+    door1Text.resize(width, height);
     door2Unpassed = loadImage("Room 1 Code Unpassed.png");
     door2Unpassed.resize(width, height);
     door2Passed = loadImage("Room 1 Code Pass.png");
@@ -499,7 +479,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 4) {
       drawRoom2();
       drawAlex();
-      //detectWallCollision();
+      detectWallCollision();
       drawFlashlight();
       drawCurrentClue();
       doorResult();
@@ -508,7 +488,7 @@ public class Sketch extends PApplet {
     else if (intDraw == 5) {
       drawRoom3();
       drawAlex();
-      //detectWallCollision();
+      detectWallCollision();
       drawFlashlight();
       drawCurrentClue();
       doorResult();
@@ -849,7 +829,7 @@ public class Sketch extends PApplet {
         // Display the password text
         fill(255, 255, 255);
         textSize(width * 50/800);
-        text(strPasswords[2], width * 122/800, height * 355/800);
+        text(strPasswords[2], width * 100/800, height * 250/800);
         
         // Determine the text size
         textSize(width * 20/800);
@@ -916,7 +896,7 @@ public class Sketch extends PApplet {
 
   // Draws a good ending when intDraw = 7
   public void drawGoodEnding() {
-
+    
   }
 
   // Draws a flashlight for Alex
@@ -1211,7 +1191,30 @@ public class Sketch extends PApplet {
     }
     // Checks the players mouse interactions in the third room
     else if (intDraw == 5) {
+      // Allows the player to move to the next room when the mouse button is pressed and resets Alex's x position
+      if (boolDoorUnlocked[5]) {
+        intAlexX = width * 105/800;
+        intDraw = 7;
+      }
 
+      // Updates the password based on the number keys the player clicks on
+      for (int z = 0; z < doorThirX.length; z++) {
+        if (mouseX > doorThirX[z] && mouseX < doorThirX[z] + doorThirButt[z].width && mouseY > doorThirY[z] && mouseY < doorThirY[z] + doorThirButt[z].height) {
+          strPasswords[2] += (char)('A' + z) + " ";
+        }
+      }
+      // Checks if the enter button has been pushed
+      if (mouseX > enterX[2] && mouseX < enterX[2] + enterButton.width && mouseY > enterY[2] && mouseY < enterY[2] + enterButton.height) {
+        if (strPasswords[2].equals(strTargPass[2])) {
+        
+          // Unlocks the door
+          boolDoorUnlocked[5] = true;
+        }
+        else {
+          intThiAtmpts--;
+          strPasswords[2] = "";
+        }
+      }
     }
   }
 
