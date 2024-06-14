@@ -167,8 +167,16 @@ public class Sketch extends PApplet {
   PImage goodEnding;
   PImage badEnding;
 
-  // Boolean value that determines whether or not a bug message should show on the screen
-  boolean boolShowBugMsg = false;
+  // Related string and boolean array to show certain messages on the screen once
+  String strShowMsg = "Sorry about the bug. Please move\nthe character in all four directions\nand continue playing to resolve the issue.\nClick on the screen to remove this message.";
+  boolean boolShowMsg = false;
+
+  // Stores the timer
+  int intTime;
+  int intTotalTime = 20 * 60 * 1000;
+
+  // Determines when the timer has started
+  boolean boolTimeStar = false;
 
   // Set the size of the window
   public void settings() {
@@ -204,8 +212,8 @@ public class Sketch extends PApplet {
     roomTwoPageY = new int[]{height * 648/800, height * 291/800, height * 260/800};
 
     // Intializes the x and y values of the pages in room three based on the window size
-    roomThreePageX = new int[]{width * 163/800, width * 549/800, width * 598/800, width * 321/800, width * 406/800, width * 246/800};
-    roomThreePageY = new int[]{height * 689/800, height * 382/800, height * 679/800, height * 446/800, height * 530/800, height * 236/800};
+    roomThreePageX = new int[]{width * 163/800, width * 549/800, width * 598/800, width * 218/800, width * 406/800, width * 246/800};
+    roomThreePageY = new int[]{height * 689/800, height * 382/800, height * 679/800, height * 410/800, height * 530/800, height * 236/800};
 
     // Set the x and y positions of the doors
     doorX = new int[] {width * 20/800, width * 710/800, width * 20/800, width * 710/800, width * 20/800, width * 710/800};
@@ -232,10 +240,9 @@ public class Sketch extends PApplet {
       intStartX += width * 120/800;
     }
 
+    // Set the x and y positions of the buttons in the third password
     int intStartX2 = width * 100/800;
     int intStartY2 = height * 300/800;
-
-    // Set the x and y positions of the buttons in the third password with four rows, and 7, 6, 7, 6 buttons in each row
 
     for (int y = 0; y < doorThirButt.length; y++) {
       doorThirX[y] = intStartX2;
@@ -247,8 +254,6 @@ public class Sketch extends PApplet {
       }
       intStartX2 += width * 120/800;
     }
-  
-    
 
     // Set the x and y positions of the enter button for each of the three passwords
     enterX = new int[] {width * 666/800, width * 580/800, width * 580/800};
@@ -365,7 +370,7 @@ public class Sketch extends PApplet {
     // Load the room 2 letters
     for (int j = 0; j < roomTwoLetters.length; j++) {
       roomTwoLetters[j] = loadImage("Room 2 Letter " + (j + 1) + ".png");
-      roomTwoLetters[j].resize(roomTwoLetters[j].width / 3, roomTwoLetters[j].height / 3);
+      roomTwoLetters[j].resize(width * (roomTwoLetters[j].width / 3)/800, height * (roomTwoLetters[j].height / 3)/800);
     }
 
     // Load the objects in room 2 and add them to an ArrayList
@@ -389,7 +394,7 @@ public class Sketch extends PApplet {
     // Load the room 3 letters
     for (int k = 0; k < roomThreeJournals.length; k++) {
       roomThreeJournals[k] = loadImage("Room 3 Letter " + (k + 1) + ".png");
-      roomThreeJournals[k].resize(roomThreeJournals[k].width / 3, roomThreeJournals[k].height / 3);
+      roomThreeJournals[k].resize(width * (roomThreeJournals[k].width / 3)/800, height * (roomThreeJournals[k].height / 3)/800);
     }
 
     // Load the objects in room 2 and add them to an ArrayList
@@ -461,12 +466,11 @@ public class Sketch extends PApplet {
     badEnding.resize(width, height);
     goodEnding = loadImage("GoodEnding.png");
     goodEnding.resize(width, height);
-
   } 
 
   // Everything drawn to the screen
   public void draw() {
-    
+
     // Draw start screen
     if (intDraw == 0) {
       drawStartScreen();
@@ -487,7 +491,8 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
-      bugMessage();
+      showMessage();
+      drawTimer();
    
     }
     // Draw room 2
@@ -498,7 +503,8 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
-      bugMessage();
+      showMessage();
+      drawTimer();
     }
     // Draw room 3
     else if (intDraw == 5) {
@@ -508,21 +514,18 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
-      bugMessage();
+      showMessage();
+      drawTimer();
     }
+    // Draws the bad ending
     else if (intDraw == 6) {
       drawBadEnding();
     }
 
+    // Draws the good ending
     else if (intDraw == 7) {
       drawGoodEnding();
     }
-
-    
-    textSize(16); 
-    String coords = "Mouse X: " + mouseX + ", Mouse Y: " + mouseY;
-    text(coords, 10, height - 20); 
-    
     
   }
   
@@ -728,6 +731,28 @@ public class Sketch extends PApplet {
       }
   }
   
+  // Draws the current clue on the screen
+  public void drawCurrentClue() {
+
+    // Sets e pushed to true when there is an image in currentClueImage and the e key is pressed
+    if (currentClueImage != null && keyPressed && key == 'e') {
+      ePushed = true;
+    }
+    
+    else if (ePushed && currentClueImage != null) {
+
+      // Draws the clue on the screen after the e key is pressed
+      imageMode(CENTER);
+      image(currentClueImage, width / 2, height / 2);
+      imageMode(CORNER);
+
+    } 
+    
+    // Sets e pushed to false when there is no image in currentClueImage
+    else {
+      ePushed = false;
+    }
+  }
   // Detects proximity of door interactions
   public void detectDoorInter(int drX, int drY, int drW, int drH, int drIndex) {
     
@@ -737,8 +762,6 @@ public class Sketch extends PApplet {
   }
 
   // Performs the operation of each door
-
-  // BE CAREFUL TO NOT MAKE THE PLAYER MOVE BETWEEN ROOMS AFTER ENTERING ONE DOOR
   public void doorResult() {
 
     if (intCurDoor == 0) {
@@ -790,6 +813,11 @@ public class Sketch extends PApplet {
     }
     else if (intCurDoor == 2) {
       
+      // Tells the player the door locked behind them
+      textSize(width * 20/800);
+      textAlign(CENTER);
+      text("The door has locked behind you.", width / 2, height * 3/4);
+      textAlign(LEFT);
     }
     else if (intCurDoor == 3) {
       
@@ -835,7 +863,12 @@ public class Sketch extends PApplet {
       }
     }
     else if (intCurDoor == 4) {
-
+      
+      // Tells the player the door locked behind them
+      textSize(width * 20/800);
+      textAlign(CENTER);
+      text("The door has locked behind you.", width / 2, height * 3/4);
+      textAlign(LEFT);
     }
     else if (intCurDoor == 5) {
       if (!boolDoorUnlocked[5]) {
@@ -881,27 +914,6 @@ public class Sketch extends PApplet {
     }  
 
   }
-
-  // Draws the current clue on the screen
-  public void drawCurrentClue() {
-    
-    // Sets e pushed to true when there is an image in currentClueImage and the e key is pressed
-    if (currentClueImage != null && keyPressed && key == 'e') {
-      ePushed = true;
-    }
-    // Draws the clue on the screen after the e key is pressed
-    else if (ePushed && currentClueImage != null) {
-      
-      imageMode(CENTER);
-      image(currentClueImage, width / 2, height / 2);
-      imageMode(CORNER);
-    } 
-    
-    // Sets e pushed to false when there is no image in currentClueImage
-    else {
-      ePushed = false;
-    }
-}
 
   public void detectWallCollision() {
      if (intAlexX - alexIdleForward.width / 2 < width * 66/800 || intAlexX + alexIdleForward.width / 2 > width * 739/800 || intAlexY + alexIdleForward.height / 2 > height * 776/800 || intAlexY < height * 209/800){
@@ -1109,7 +1121,7 @@ public class Sketch extends PApplet {
       
       intAlexX = width / 2;
       intAlexY = height / 2;
-      boolShowBugMsg = true;
+      boolShowMsg = true;
 
     }
   }
@@ -1140,7 +1152,8 @@ public class Sketch extends PApplet {
   public void mousePressed() {
     
     // Removes a bug message from the screen
-    boolShowBugMsg = false;
+    boolShowMsg = false;
+  
     
     // Checks mouse interactivity on the start screen
     if (intDraw == 0) {
@@ -1178,26 +1191,29 @@ public class Sketch extends PApplet {
       
       // Allows the player to move to the next room when the mouse button is pressed and resets Alex's x position
       if (boolDoorUnlocked[1]) {
-        intAlexX = width * 105/800;
+        intAlexX = width * 200/800;
         intDraw = 4;
       }
 
-      // Updates the password based on the number keys the player clicks on
-      for (int h = 0; h < doorFirstX.length; h++) {
-        if (mouseX > doorFirstX[h] && mouseX < doorFirstX[h] + doorFirstButt[h].width && mouseY > doorFirstY[h] && mouseY < doorFirstY[h] + doorFirstButt[h].height) {
-          strPasswords[0] += (h + 1) + " ";
-        }
-      }
-      // Checks if the enter button has been pushed
-      if (mouseX > enterX[0] && mouseX < enterX[0] + enterButton.width && mouseY > enterY[0] && mouseY < enterY[0] + enterButton.height) {
-        if (strPasswords[0].equals(strTargPass[0])) {
+      if (intCurDoor == 1) {
         
-          // Unlocks the door
-          boolDoorUnlocked[1] = true;
+        // Updates the password based on the number keys the player clicks on
+        for (int h = 0; h < doorFirstX.length; h++) {
+          if (mouseX > doorFirstX[h] && mouseX < doorFirstX[h] + doorFirstButt[h].width && mouseY > doorFirstY[h] && mouseY < doorFirstY[h] + doorFirstButt[h].height) {
+            strPasswords[0] += (h + 1) + " ";
+          }
         }
-        else {
-          intFirAtmpts--;
-          strPasswords[0] = "";
+        // Checks if the enter button has been pushed
+        if (mouseX > enterX[0] && mouseX < enterX[0] + enterButton.width && mouseY > enterY[0] && mouseY < enterY[0] + enterButton.height) {
+          if (strPasswords[0].equals(strTargPass[0])) {
+          
+            // Unlocks the door
+            boolDoorUnlocked[1] = true;
+          }
+          else {
+            intFirAtmpts--;
+            strPasswords[0] = "";
+          }
         }
       }
     }
@@ -1206,66 +1222,108 @@ public class Sketch extends PApplet {
       
       /// Allows the player to move to the next room when the mouse button is pressed and resets Alex's x position
       if (boolDoorUnlocked[3]) {
-        intAlexX = width * 105/800;
+        intAlexX = width * 200/800;
         intDraw = 5;
       }
 
-      // Updates the password based on the number keys the player clicks on
-      for (int t = 0; t < doorSecX.length; t++) {
-        if (mouseX > doorSecX[t] && mouseX < doorSecX[t] + doorSecButt[t].width && mouseY > doorSecY[t] && mouseY < doorSecY[t] + doorSecButt[t].height) {
-          strPasswords[1] += t + " ";
-        }
-      }
-      // Checks if the enter button has been pushed
-      if (mouseX > enterX[1] && mouseX < enterX[1] + enterButton.width && mouseY > enterY[1] && mouseY < enterY[1] + enterButton.height) {
-        if (strPasswords[1].equals(strTargPass[1])) {
+      if (intCurDoor == 3) {
         
-          // Unlocks the door
-          boolDoorUnlocked[3] = true;
+        // Updates the password based on the number keys the player clicks on
+        for (int t = 0; t < doorSecX.length; t++) {
+          if (mouseX > doorSecX[t] && mouseX < doorSecX[t] + doorSecButt[t].width && mouseY > doorSecY[t] && mouseY < doorSecY[t] + doorSecButt[t].height) {
+            strPasswords[1] += t + " ";
+          }
         }
-        else {
-          intSecAtmpts--;
-          strPasswords[1] = "";
+        // Checks if the enter button has been pushed
+        if (mouseX > enterX[1] && mouseX < enterX[1] + enterButton.width && mouseY > enterY[1] && mouseY < enterY[1] + enterButton.height) {
+          if (strPasswords[1].equals(strTargPass[1])) {
+          
+            // Unlocks the door
+            boolDoorUnlocked[3] = true;
+          }
+          else {
+            intSecAtmpts--;
+            strPasswords[1] = "";
+          }
         }
       }
+
     }
     // Checks the players mouse interactions in the third room
     else if (intDraw == 5) {
       // Allows the player to move to the next room when the mouse button is pressed and resets Alex's x position
       if (boolDoorUnlocked[5]) {
-        intAlexX = width * 105/800;
+        intAlexX = width * 200/800;
         intDraw = 7;
       }
-
-      // Updates the password based on the number keys the player clicks on
-      for (int z = 0; z < doorThirX.length; z++) {
-        if (mouseX > doorThirX[z] && mouseX < doorThirX[z] + doorThirButt[z].width && mouseY > doorThirY[z] && mouseY < doorThirY[z] + doorThirButt[z].height) {
-          strPasswords[2] += (char)('A' + z) + " ";
-        }
-      }
-      // Checks if the enter button has been pushed
-      if (mouseX > enterX[2] && mouseX < enterX[2] + enterButton.width && mouseY > enterY[2] && mouseY < enterY[2] + enterButton.height) {
-        if (strPasswords[2].equals(strTargPass[2])) {
+      if (intCurDoor == 5) {
         
-          // Unlocks the door
-          boolDoorUnlocked[5] = true;
+        // Updates the password based on the number keys the player clicks on
+        for (int z = 0; z < doorThirX.length; z++) {
+          if (mouseX > doorThirX[z] && mouseX < doorThirX[z] + doorThirButt[z].width && mouseY > doorThirY[z] && mouseY < doorThirY[z] + doorThirButt[z].height) {
+            strPasswords[2] += (char)('A' + z) + " ";
+          }
         }
-        else {
-          intThiAtmpts--;
-          strPasswords[2] = "";
+        // Checks if the enter button has been pushed
+        if (mouseX > enterX[2] && mouseX < enterX[2] + enterButton.width && mouseY > enterY[2] && mouseY < enterY[2] + enterButton.height) {
+          if (strPasswords[2].equals(strTargPass[2])) {
+          
+            // Unlocks the door
+            boolDoorUnlocked[5] = true;
+          }
+          else {
+            intThiAtmpts--;
+            strPasswords[2] = "";
+          }
         }
       }
     }
   }
   
-  // Shows a message apologizing to the player for a bug
-  public void bugMessage() {
-    if (boolShowBugMsg) {
+  // Shows messages to the player's screen
+  public void showMessage() {
+    if (boolShowMsg) {
       
       textAlign(CENTER);
       textSize(width * 20/800);
-      text("Sorry about the bug. Please move \nthe character in all four directions \nand continue playing to resolve the issue.\nClick on the screen to remove this message.", width / 2, height / 2);
+      text(strShowMsg, width / 2, height / 2);
       textAlign(LEFT);
+    }
+  }
+
+
+  public void drawTimer() {
+    
+    // Changes the text size
+    textSize(width * 20/800);
+    
+    // Initalize the time with the current time
+    if (!boolTimeStar) {
+      intTime = millis(); 
+      boolTimeStar = true;
+    }
+    
+    // Elapsed time
+    int intElapsedTime = millis() - intTime;
+
+    // Remaining time
+    int intRemainingTime = intTotalTime - intElapsedTime;
+
+    // Convert milliseconds to minutes and seconds
+    int intMinutes = (intRemainingTime / 1000) / 60;
+    int intSeconds = (intRemainingTime / 1000) % 60;
+
+    // Turns the text red when there is less than one minute remaining
+    if (intRemainingTime < 60 * 1000 && intRemainingTime > 0) {
+      fill(255, 0, 0);
+    }
+
+    // Display the timer
+    text(nf(intMinutes, 2) + ":" + nf(intSeconds, 2), width * 740/800, height * 25/800);
+
+    // Draws the bad ending when the player runs out of time
+    if (intRemainingTime <= 0) {
+      drawBadEnding();
     }
   }
 }
