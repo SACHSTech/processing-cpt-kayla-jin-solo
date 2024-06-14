@@ -12,6 +12,9 @@ public class Sketch extends PApplet {
 
   // Make the background music an audio player
   AudioPlayer backgroundMusic;
+
+  // Make the jumpscare music an audio player
+  AudioPlayer jumpScare;
   
   // PlayfairDisplay font
   PFont playfairDisplay;
@@ -164,9 +167,12 @@ public class Sketch extends PApplet {
   PImage goodEnding;
   PImage badEnding;
 
+  // Boolean value that determines whether or not a bug message should show on the screen
+  boolean boolShowBugMsg = false;
+
   // Set the size of the window
   public void settings() {
-    size(600, 600);
+    size(800, 800);
 
     // Sets Alex's initial position
     intAlexX = width / 2;
@@ -180,8 +186,8 @@ public class Sketch extends PApplet {
     Collections.addAll(oneObjectY, height * 656/800, height * 640/800, height * 227/800, height * 337/800, height * 215/800);
 
     // Adds the x and y values of the objects in room 2 based on the window size into two arrays
-    Collections.addAll(twoObjectX, width * 86/800, width * 100/800, width * 611/800, width * 200/800, width * 460/800);
-    Collections.addAll(twoObjectY, height * 230/800, height * 640/800, height * 384/800, height * 560/800, height * 229/800);
+    Collections.addAll(twoObjectX, width * 86/800, width * 100/800, width * 330/800, width * 200/800, width * 460/800);
+    Collections.addAll(twoObjectY, height * 230/800, height * 640/800, height * 233/800, height * 560/800, height * 229/800);
 
     // Adds the x and y values of the objects in room 3 based on the window size into two arrays
     Collections.addAll(threeObjectX, width * 125/800, width * 487/800, width * 74/800, width * 594/800, width * 525/800, 
@@ -259,6 +265,9 @@ public class Sketch extends PApplet {
     // Load and loop the background music
     backgroundMusic = minim.loadFile("Caliginous Hearthfire.mp3");
     backgroundMusic.loop();
+
+    // Load the jump scare music
+    jumpScare = minim.loadFile("Jumpscare Sound Effect.mp3");
 
     playfairDisplay = createFont("PlayfairDisplay-VariableFont_wght.ttf", width * 128/800);
     textFont(playfairDisplay);
@@ -341,9 +350,9 @@ public class Sketch extends PApplet {
     String[] roomOneObjNames = {"Small Table.png", "Couch.png", "Table.png", "Chair.png", "Piano.png"};
 
     // Adds each object in room 1 into the room 1 ArrayList
-    for (String name : roomOneObjNames) {
+    for (int n = 0; n < roomOneObjNames.length; n++) {
       
-      PImage img = loadImage(name);
+      PImage img = loadImage(roomOneObjNames[n]);
       img.resize(width * img.width/800, height * img.height/800);
       oneObjects.add(img);
     }
@@ -364,12 +373,13 @@ public class Sketch extends PApplet {
     String[] roomTwoObjNames = {"Small Couch 2.png", "Table.png", "Small Table.png", "Chair 2.png", "Bed.png"};
 
     // Adds each object in room 2 into the room 2 ArrayList
-    for (String name2 : roomTwoObjNames) {
-
-      PImage img2 = loadImage(name2);
-      img2.resize(width * img2.width / 800, height * img2.height / 800);
+    for (int n = 0; n < roomTwoObjNames.length; n++) {
+      
+      PImage img2 = loadImage(roomTwoObjNames[n]);
+      img2.resize(width * img2.width/800, height * img2.height/800);
       twoObjects.add(img2);
     }
+
     // Load the room 3 pages
     for (int o = 0; o < roomThreePages.length; o++) {
       roomThreePages[o] = loadImage("Letter Page.png");
@@ -389,9 +399,10 @@ public class Sketch extends PApplet {
     "Large Crate.png", "Couch 2.png", "Small Crate R.png", "Small Crate R.png", "Small Crate.png"};
     
     // Adds each object in room 3 into the room 3 ArrayList
-    for (String name3 : roomThreeObjNames) {
-
-      PImage img3 = loadImage(name3);
+    for (int n = 0; n < roomThreeObjNames.length; n++) {
+      
+      PImage img3 = loadImage(roomThreeObjNames[n]);
+      img3.resize(width * img3.width/800, height * img3.height/800);
       threeObjects.add(img3);
     }
 
@@ -445,8 +456,11 @@ public class Sketch extends PApplet {
     enterButton = loadImage("enter.png");
     enterButton.resize(width * 96/800, height * 96/800);
 
+    // Load the images for the two endings of the game
     badEnding = loadImage("BadEnding.png");
     badEnding.resize(width, height);
+    goodEnding = loadImage("GoodEnding.png");
+    goodEnding.resize(width, height);
 
   } 
 
@@ -473,6 +487,7 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
+      bugMessage();
    
     }
     // Draw room 2
@@ -483,6 +498,7 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
+      bugMessage();
     }
     // Draw room 3
     else if (intDraw == 5) {
@@ -492,15 +508,21 @@ public class Sketch extends PApplet {
       drawFlashlight();
       drawCurrentClue();
       doorResult();
+      bugMessage();
     }
     else if (intDraw == 6) {
       drawBadEnding();
     }
 
-    // Temporary mouse coordinates for positioning purposes
+    else if (intDraw == 7) {
+      drawGoodEnding();
+    }
+
+    
     textSize(16); 
     String coords = "Mouse X: " + mouseX + ", Mouse Y: " + mouseY;
     text(coords, 10, height - 20); 
+    
     
   }
   
@@ -891,12 +913,18 @@ public class Sketch extends PApplet {
 
   // Draws a bad ending when intDraw = 6
   public void drawBadEnding() {
+    
+    // Plays jumpscare music and draws the bad ending image
+    jumpScare.play();
     image(badEnding, 0, 0);
+
+    // Stops the background music
+    backgroundMusic.close();
   }
 
   // Draws a good ending when intDraw = 7
   public void drawGoodEnding() {
-    
+    image(goodEnding, 0, 0);
   }
 
   // Draws a flashlight for Alex
@@ -1075,6 +1103,15 @@ public class Sketch extends PApplet {
     else if (key == 'd') {
       dPressed = true;
     }
+
+    // Resets the players position if they ever get stuck (there is a bug that teleports the player into random places if they walk directly into a wall after entering a room)
+    if (key == 'r') {
+      
+      intAlexX = width / 2;
+      intAlexY = height / 2;
+      boolShowBugMsg = true;
+
+    }
   }
 
   // Alex's movement
@@ -1101,6 +1138,9 @@ public class Sketch extends PApplet {
 
   // Checks when the mouse is pressed
   public void mousePressed() {
+    
+    // Removes a bug message from the screen
+    boolShowBugMsg = false;
     
     // Checks mouse interactivity on the start screen
     if (intDraw == 0) {
@@ -1217,5 +1257,15 @@ public class Sketch extends PApplet {
       }
     }
   }
-
+  
+  // Shows a message apologizing to the player for a bug
+  public void bugMessage() {
+    if (boolShowBugMsg) {
+      
+      textAlign(CENTER);
+      textSize(width * 20/800);
+      text("Sorry about the bug. Please move \nthe character in all four directions \nand continue playing to resolve the issue.\nClick on the screen to remove this message.", width / 2, height / 2);
+      textAlign(LEFT);
+    }
+  }
 }
