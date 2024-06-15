@@ -765,7 +765,14 @@ public class Sketch extends PApplet {
       intAlexX = width;
     }
   }
-
+  /**
+   * Detects collision with objects placed in the rooms
+   * 
+   * @param intObsX The x value of the object
+   * @param intObsY The y value of the object
+   * @param intObsW The width of the object
+   * @param intObsH The height of the object
+   */
   public void detectCollision(int intObsX, int intObsY, int intObsW, int intObsH) {
 
     // Detects collision with objects based on the x, y, width, and height parameters
@@ -778,6 +785,15 @@ public class Sketch extends PApplet {
     }
   }
 
+  /**
+   * Detects proximity of the player with an interactable clue
+   * 
+   * @param clImg The image the object shows on the full screen to the player
+   * @param clX The x value of the object in the room
+   * @param clY The y value of the object in the room
+   * @param clW The width of the object in the room
+   * @param clH The height of the object in the room
+   */
   public void detectInteraction(PImage clImg, int clX, int clY, int clW, int clH) {
     
     // Detects proximity of interactions
@@ -812,6 +828,15 @@ public class Sketch extends PApplet {
     }
   }
   
+  /**
+   * Detects interaction proximity with doors
+   * 
+   * @param drX The x value of the door
+   * @param drY The y value of the door
+   * @param drW The width of the door
+   * @param drH The height of the door
+   * @param drIndex The index of the door in the door array
+   */
   public void detectDoorInter(int drX, int drY, int drW, int drH, int drIndex) {
     
     // Detects proximity of door interactions
