@@ -27,3 +27,5 @@ There is an uncommon bug in the code that teleports the player in a random place
 When any key other than WASD is pressed, the player character very shortly flashes invisible.
 
 The cabin walls of the program cannot be adjusted to any shape or size, all of them must have the same square boundaries.
+
+Important Note: The minim library must be installed in order to run the code

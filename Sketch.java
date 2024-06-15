@@ -157,6 +157,7 @@ public class Sketch extends PApplet {
   int[] doorSecX = new int[10];
   int[] doorSecY = new int[10];
 
+  // Related arrays for the button images, x coordinates, and y coordinates for the third password
   PImage[] doorThirButt = new PImage[25];
   int[] doorThirX = new int[25];
   int[] doorThirY = new int[25];
