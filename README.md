@@ -10,19 +10,31 @@ Throughout his exploration of the cabin, Alex realizes things are not as they se
 
 Gameplay Mechanics
 
-The player uses the WASD keys to move up, left, down, and right in each room of the cabin. They press the e key to interact with clues, and the r key to reset their position to the middle of the cabin (to counter a bug that sometimes teleports them into random places). Once the player opens a clue, they can walk away to remove it from their screen. The player must approach the doors on the right of each room and solve the puzzle based on clues in the current room to enter the next room. Each puzzle shows either numbers or letter buttons, which the player must click on with their mouse in order to input a code. The player can click on the enter button to enter their code.
+The player uses the WASD keys to move up, left, down, and right in each room of the cabin. They press the e key to interact with clues, and the r key to reset their position to the middle of the cabin (to counter a bug that sometimes teleports them into random places). 
+
+![Controls](image-2.png)
+
+Once the player opens a clue, they can walk away to remove it from their screen. The player must approach the doors on the right of each room and solve the puzzle based on clues in the current room to enter the next room. Each puzzle shows either numbers or letter buttons, which the player must click on with their mouse in order to input a code. The player can click on the enter button to enter their code.
+
+![Password 1](image-3.png)
 
 Good Ending
 
 In the good ending, the player successfully escapes from the cabin. The player can reach the good ending if they go through the three rooms within the time limit of 20 minutes, and never take more than three attempts to guess a code.
 
+![Good Ending](image-1.png)
+
 Bad Ending
 
 In the bad ending, the player is consumed by the ghost of the cabin owner. This occurs either when the player has more than 3 incorrect attempts at a code, or takes more than 20 minutes to escape.
 
+![Bad Ending](image.png)
+
 Limitations
 
 There is an uncommon bug in the code that teleports the player in a random place and renders them unable to move. This occurs when the player enters a room and presses only one direction key to immediately move the player into a wall or object. However, if the player moves in a different direction before walking into a wall or object, this bug does not occur and the collision detection in the game works fine. To combat this issue, the player can press the r key to reset their player position.
+
+![Player glitched out of the room](image-4.png)
 
 When any key other than WASD is pressed, the player character very shortly flashes invisible.
 
